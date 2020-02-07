@@ -26,7 +26,7 @@ function App() {
     setState({ ...state, newItem: e.target.value });
   };
 
-  const handleClick = () => {
+  const addItem = () => {
     setState({
       ...state,
       newItem: "",
@@ -54,6 +54,12 @@ function App() {
     setState({ ...state, filter: filter });
   };
 
+  const handleKeyDown = e => {
+    if (e.key === 'Enter') {
+      addItem();
+    }
+  };
+
   return (
     <div className="App">
       <div className="container">
@@ -61,10 +67,12 @@ function App() {
           <input
             className="add-input"
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             value={state.newItem}
             placeholder="What to do?"
+            autoFocus
           />
-          <button className="add" onClick={handleClick}>
+          <button className="add" onClick={addItem}>
             +
           </button>
         </div>
