@@ -1,16 +1,10 @@
 import React, { useState } from "react";
 import "./App.css";
 
-const classList = function(...args) {
-  return args
-    .reduce(function(acc, arg) {
-      if (typeof arg === "string") {
-        return [...acc, ...arg.split(" ")];
-      }
-
-      return [...acc, ...Object.keys(arg).filter(key => arg[key])];
-    }, [])
-    .join(" ");
+const classList = function(map, fixed = "") {
+  const fixedList = fixed.split(" ").filter(token => token !== "");
+  const dynamicList = Object.keys(map).filter(key => map[key]);
+  return [...fixedList, ...dynamicList].join(" "); 
 };
 
 const filterItems = function(filter, items) {
@@ -124,7 +118,7 @@ const App = function() {
           {filterItems(state.filter, state.items).map(item => (
             <div
               onClick={() => toggleStatus(item.id)}
-              className={classList("item", { done: item.done })}
+              className={classList({ done: item.done }, "item")}
               key={item.id}
             >
               {item.text}
