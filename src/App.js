@@ -3,14 +3,24 @@ import "./App.css";
 
 function App() {
   const [state, setState] = useState({
-    newItem: "what to do?",
+    newItem: "",
     filter: "All",
-    items: [
-      { text: "foo", done: false, id: 0 },
-      { text: "bar", done: true, id: 1 },
-      { text: "qux", done: false, id: 2 }
-    ]
+    items: []
   });
+
+  const getItemsFiltered = () => {
+    return state.items.filter(item => {
+      if (state.filter === "Pending") {
+        return !item.done;
+      }
+
+      if (state.filter === "Done") {
+        return item.done;
+      }
+
+      return true;
+    });
+  };
 
   const handleChange = e => {
     setState({ ...state, newItem: e.target.value });
@@ -18,6 +28,7 @@ function App() {
 
   const handleClick = () => {
     setState({
+      ...state,
       newItem: "",
       items: [
         ...state.items,
@@ -29,17 +40,18 @@ function App() {
   const toggleStatus = id => {
     setState({
       ...state,
-      items: state.items.map(item =>
-        item.id === id ? { ...item, done: !item.done } : item
-      )
+      items: state.items.map(item => {
+        if (item.id !== id) {
+          return item;
+        }
+
+        return { ...item, done: !item.done };
+      })
     });
   };
 
   const handleFilterChange = filter => {
-    setState({
-      ...state,
-      filter: filter
-    });
+    setState({ ...state, filter: filter });
   };
 
   return (
@@ -50,6 +62,7 @@ function App() {
             className="add-input"
             onChange={handleChange}
             value={state.newItem}
+            placeholder="What to do?"
           />
           <button className="add" onClick={handleClick}>
             +
@@ -85,25 +98,15 @@ function App() {
           </label>
         </div>
         <div className="list">
-          {state.items
-            .filter(item => {
-              if (state.filter === "Pending") {
-                return !item.done;
-              }
-              if (state.filter === "Done") {
-                return item.done;
-              }
-              return true;
-            })
-            .map(item => (
-              <div
-                onClick={() => toggleStatus(item.id)}
-                className={item.done ? "item done" : "item"}
-                key={item.id}
-              >
-                {item.text}
-              </div>
-            ))}
+          {getItemsFiltered().map(item => (
+            <div
+              onClick={() => toggleStatus(item.id)}
+              className={item.done ? "item done" : "item"}
+              key={item.id}
+            >
+              {item.text}
+            </div>
+          ))}
         </div>
       </div>
     </div>
