@@ -1,32 +1,32 @@
 import React, { useState } from "react";
 import "./App.css";
 
-function App() {
+const filterItems = function (filter, items) {
+  return items.filter(function (item) {
+    if (filter === "Pending") {
+      return !item.done;
+    }
+
+    if (filter === "Done") {
+      return item.done;
+    }
+
+    return true;
+  });
+};
+
+const App = function () {
   const [state, setState] = useState({
     newItem: "",
     filter: "All",
     items: []
   });
 
-  const getItemsFiltered = () => {
-    return state.items.filter(item => {
-      if (state.filter === "Pending") {
-        return !item.done;
-      }
-
-      if (state.filter === "Done") {
-        return item.done;
-      }
-
-      return true;
-    });
-  };
-
-  const handleChange = e => {
+  const handleNewItemChange = function (e) {
     setState({ ...state, newItem: e.target.value });
   };
 
-  const addItem = () => {
+  const addItem = function () {
     setState({
       ...state,
       newItem: "",
@@ -37,10 +37,10 @@ function App() {
     });
   };
 
-  const toggleStatus = id => {
+  const toggleStatus = function (id) {
     setState({
       ...state,
-      items: state.items.map(item => {
+      items: state.items.map(function (item) {
         if (item.id !== id) {
           return item;
         }
@@ -50,12 +50,12 @@ function App() {
     });
   };
 
-  const handleFilterChange = filter => {
+  const handleFilterChange = function (filter) {
     setState({ ...state, filter: filter });
   };
 
   const handleKeyDown = e => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       addItem();
     }
   };
@@ -66,7 +66,7 @@ function App() {
         <div className="new-item">
           <input
             className="add-input"
-            onChange={handleChange}
+            onChange={handleNewItemChange}
             onKeyDown={handleKeyDown}
             value={state.newItem}
             placeholder="What to do?"
@@ -106,7 +106,7 @@ function App() {
           </label>
         </div>
         <div className="list">
-          {getItemsFiltered().map(item => (
+          {filterItems(state.filter, state.items).map(item => (
             <div
               onClick={() => toggleStatus(item.id)}
               className={item.done ? "item done" : "item"}
