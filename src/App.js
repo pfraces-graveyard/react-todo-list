@@ -37,6 +37,12 @@ const App = function () {
     });
   };
 
+  const handleNewItemKeyDown = function (e) {
+    if (e.key === "Enter") {
+      addItem();
+    }
+  };
+
   const toggleStatus = function (id) {
     setState({
       ...state,
@@ -50,14 +56,8 @@ const App = function () {
     });
   };
 
-  const handleFilterChange = function (filter) {
-    setState({ ...state, filter: filter });
-  };
-
-  const handleKeyDown = e => {
-    if (e.key === "Enter") {
-      addItem();
-    }
+  const handleFilterChange = function (e) {
+    setState({ ...state, filter: e.target.value });
   };
 
   return (
@@ -67,7 +67,7 @@ const App = function () {
           <input
             className="add-input"
             onChange={handleNewItemChange}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleNewItemKeyDown}
             value={state.newItem}
             placeholder="What to do?"
             autoFocus
@@ -81,7 +81,8 @@ const App = function () {
             <input
               type="radio"
               name="filter"
-              onChange={() => handleFilterChange("All")}
+              value="All"
+              onChange={handleFilterChange}
               checked={state.filter === "All"}
             />
             All
@@ -90,7 +91,8 @@ const App = function () {
             <input
               type="radio"
               name="filter"
-              onChange={() => handleFilterChange("Pending")}
+              value="Pending"
+              onChange={handleFilterChange}
               checked={state.filter === "Pending"}
             />
             Pending
@@ -99,7 +101,8 @@ const App = function () {
             <input
               type="radio"
               name="filter"
-              onChange={() => handleFilterChange("Done")}
+              value="Done"
+              onChange={handleFilterChange}
               checked={state.filter === "Done"}
             />
             Done
