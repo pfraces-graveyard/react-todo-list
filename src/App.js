@@ -1,8 +1,20 @@
 import React, { useState } from "react";
 import "./App.css";
 
-const filterItems = function (filter, items) {
-  return items.filter(function (item) {
+const classList = function(...args) {
+  return args
+    .reduce(function(acc, arg) {
+      if (typeof arg === "string") {
+        return [...acc, ...arg.split(" ")];
+      }
+
+      return [...acc, ...Object.keys(arg).filter(key => arg[key])];
+    }, [])
+    .join(" ");
+};
+
+const filterItems = function(filter, items) {
+  return items.filter(function(item) {
     if (filter === "Pending") {
       return !item.done;
     }
@@ -15,18 +27,18 @@ const filterItems = function (filter, items) {
   });
 };
 
-const App = function () {
+const App = function() {
   const [state, setState] = useState({
     newItem: "",
     filter: "All",
     items: []
   });
 
-  const handleNewItemChange = function (e) {
+  const handleNewItemChange = function(e) {
     setState({ ...state, newItem: e.target.value });
   };
 
-  const addItem = function () {
+  const addItem = function() {
     setState({
       ...state,
       newItem: "",
@@ -37,16 +49,16 @@ const App = function () {
     });
   };
 
-  const handleNewItemKeyDown = function (e) {
+  const handleNewItemKeyDown = function(e) {
     if (e.key === "Enter") {
       addItem();
     }
   };
 
-  const toggleStatus = function (id) {
+  const toggleStatus = function(id) {
     setState({
       ...state,
-      items: state.items.map(function (item) {
+      items: state.items.map(function(item) {
         if (item.id !== id) {
           return item;
         }
@@ -56,7 +68,7 @@ const App = function () {
     });
   };
 
-  const handleFilterChange = function (e) {
+  const handleFilterChange = function(e) {
     setState({ ...state, filter: e.target.value });
   };
 
@@ -112,7 +124,7 @@ const App = function () {
           {filterItems(state.filter, state.items).map(item => (
             <div
               onClick={() => toggleStatus(item.id)}
-              className={item.done ? "item done" : "item"}
+              className={classList("item", { done: item.done })}
               key={item.id}
             >
               {item.text}
@@ -122,6 +134,6 @@ const App = function () {
       </div>
     </div>
   );
-}
+};
 
 export default App;
