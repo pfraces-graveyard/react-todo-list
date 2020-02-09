@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import { NewItem } from "./new-item";
-import { FilteredList } from "./filtered-list/filtered-list.perf-hooks";
+import { FilteredList } from "./filtered-list/filtered-list.final-hooks";
 
 const App = function() {
   console.log("App render");
