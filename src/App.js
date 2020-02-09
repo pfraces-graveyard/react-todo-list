@@ -3,17 +3,20 @@ import { classList, onEnter } from "./lib/utils";
 import { RadioGroup } from "./lib/form-components";
 import "./App.css";
 
-const appModel = {
-  newItem: "",
-  items: [],
-  filter: "All",
-  filters: [
-    { label: "All", value: "All" },
-    { label: "Pending", value: "Pending" },
-    { label: "Done", value: "Done" }
-  ],
-  getItems: function() {
-    const { items, filter } = this;
+const App = function() {
+  const [state, setState] = useState({
+    newItem: "",
+    items: [],
+    filter: "All",
+    filters: [
+      { label: "All", value: "All" },
+      { label: "Pending", value: "Pending" },
+      { label: "Done", value: "Done" }
+    ]
+  });
+
+  const getItems = function() {
+    const { items, filter } = state;
 
     return items.filter(function(item) {
       if (filter === "Pending") {
@@ -26,11 +29,7 @@ const appModel = {
 
       return true;
     });
-  }
-};
-
-const App = function() {
-  const [state, setState] = useState(appModel);
+  };
 
   const updateNewItem = function(e) {
     setState({ ...state, newItem: e.target.value });
@@ -95,7 +94,7 @@ const App = function() {
           />
         </div>
         <div className="list">
-          {state.getItems().map(item => (
+          {getItems().map(item => (
             <div
               onClick={itemStatusToggler(item.id)}
               className={classList({ done: item.done }, "item")}
