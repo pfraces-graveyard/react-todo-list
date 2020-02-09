@@ -1,38 +1,46 @@
 import React, { useState } from "react";
+import { classList, onEnter } from "./lib/utils";
+import { RadioGroup } from "./lib/form-components";
 import "./App.css";
 
-const classList = function(map, fixed = "") {
-  const fixedList = fixed.split(" ").filter(token => token !== "");
-  const dynamicList = Object.keys(map).filter(key => map[key]);
-  return [...fixedList, ...dynamicList].join(" "); 
-};
+const appModel = {
+  newItem: "",
+  items: [],
+  filter: "All",
+  filters: [
+    { label: "All", value: "All" },
+    { label: "Pending", value: "Pending" },
+    { label: "Done", value: "Done" }
+  ],
+  getItems: function() {
+    const { items, filter } = this;
 
-const filterItems = function(filter, items) {
-  return items.filter(function(item) {
-    if (filter === "Pending") {
-      return !item.done;
-    }
+    return items.filter(function(item) {
+      if (filter === "Pending") {
+        return !item.done;
+      }
 
-    if (filter === "Done") {
-      return item.done;
-    }
+      if (filter === "Done") {
+        return item.done;
+      }
 
-    return true;
-  });
+      return true;
+    });
+  }
 };
 
 const App = function() {
-  const [state, setState] = useState({
-    newItem: "",
-    filter: "All",
-    items: []
-  });
+  const [state, setState] = useState(appModel);
 
-  const handleNewItemChange = function(e) {
+  const updateNewItem = function(e) {
     setState({ ...state, newItem: e.target.value });
   };
 
   const addItem = function() {
+    if (!state.newItem) {
+      return;
+    }
+
     setState({
       ...state,
       newItem: "",
@@ -43,27 +51,23 @@ const App = function() {
     });
   };
 
-  const handleNewItemKeyDown = function(e) {
-    if (e.key === "Enter") {
-      addItem();
-    }
-  };
-
-  const toggleStatus = function(id) {
-    setState({
-      ...state,
-      items: state.items.map(function(item) {
-        if (item.id !== id) {
-          return item;
-        }
-
-        return { ...item, done: !item.done };
-      })
-    });
-  };
-
-  const handleFilterChange = function(e) {
+  const updateFilter = function(e) {
     setState({ ...state, filter: e.target.value });
+  };
+
+  const itemStatusToggler = function(id) {
+    return function() {
+      setState({
+        ...state,
+        items: state.items.map(function(item) {
+          if (item.id !== id) {
+            return item;
+          }
+
+          return { ...item, done: !item.done };
+        })
+      });
+    };
   };
 
   return (
@@ -72,8 +76,8 @@ const App = function() {
         <div className="new-item">
           <input
             className="add-input"
-            onChange={handleNewItemChange}
-            onKeyDown={handleNewItemKeyDown}
+            onChange={updateNewItem}
+            onKeyDown={onEnter(addItem)}
             value={state.newItem}
             placeholder="What to do?"
             autoFocus
@@ -83,41 +87,17 @@ const App = function() {
           </button>
         </div>
         <div className="filter">
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value="All"
-              onChange={handleFilterChange}
-              checked={state.filter === "All"}
-            />
-            All
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value="Pending"
-              onChange={handleFilterChange}
-              checked={state.filter === "Pending"}
-            />
-            Pending
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="filter"
-              value="Done"
-              onChange={handleFilterChange}
-              checked={state.filter === "Done"}
-            />
-            Done
-          </label>
+          <RadioGroup
+            name="filter"
+            radios={state.filters}
+            onChange={updateFilter}
+            checked={state.filter}
+          />
         </div>
         <div className="list">
-          {filterItems(state.filter, state.items).map(item => (
+          {state.getItems().map(item => (
             <div
-              onClick={() => toggleStatus(item.id)}
+              onClick={itemStatusToggler(item.id)}
               className={classList({ done: item.done }, "item")}
               key={item.id}
             >
