@@ -1,4 +1,9 @@
-import React, { useReducer, useCallback } from "react";
+/**
+ * Inspiration from
+ * <https://medium.com/@sdolidze/react-hooks-memoization-99a9a91c8853>
+ */
+
+ import React, { useReducer, useCallback } from "react";
 import { Filter } from "./filter";
 import { ItemList } from "./item-list";
 
