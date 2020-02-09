@@ -2,8 +2,6 @@ import React, { useReducer, useCallback } from "react";
 import { Filter } from "./filter";
 import { ItemList } from "./item-list";
 
-const identity = x => x;
-
 const initialState = {
   filter: "All",
   filters: [
@@ -18,12 +16,13 @@ const reducer = function(state, filter) {
   return { ...state, filter: filter };
 };
 
-const inputChangeDispatcher = function(dispatch, transform = identity) {
+const inputChangeDispatcher = function(dispatch) {
   const secret = Math.random();
+  console.log("new secret", secret);
 
   return function(e) {
     console.log("secret", secret);
-    dispatch(transform(e.target.value));
+    dispatch(e.target.value);
   };
 };
 
