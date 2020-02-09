@@ -3,10 +3,73 @@ import { classList, onEnter } from "./lib/utils";
 import { RadioGroup } from "./lib/form-components";
 import "./App.css";
 
-const App = function() {
+const NewItem = function(props) {
+  console.log("NewItem render");
+  const [item, setItem] = useState("");
+
+  const onItem = function() {
+    if (!item.length) {
+      return;
+    }
+    props.onItem(item);
+    setItem("");
+  };
+
+  return (
+    <div className="new-item">
+      <input
+        className="add-input"
+        onChange={e => {
+          setItem(e.target.value);
+        }}
+        onKeyDown={onEnter(onItem)}
+        value={item}
+        placeholder="What to do?"
+        autoFocus
+      />
+      <button className="add" onClick={onItem}>
+        +
+      </button>
+    </div>
+  );
+};
+
+const Filter = function(props) {
+  console.log("Filter render");
+  return (
+    <div className="filter">
+      <RadioGroup
+        name="filter"
+        radios={props.filters}
+        checked={props.checked}
+        onChange={props.onChange}
+      />
+    </div>
+  );
+};
+
+const ItemList = function(props) {
+  console.log("ItemList render");
+  return (
+    <div className="list">
+      {props.items.map(item => (
+        <div
+          onClick={() => {
+            props.onClick(item.id);
+          }}
+          className={classList({ done: item.done }, "item")}
+          key={item.id}
+        >
+          {item.text}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const FilteredList = function(props) {
+  console.log("FilteredList render");
   const [state, setState] = useState({
-    newItem: "",
-    items: [],
     filter: "All",
     filters: [
       { label: "All", value: "All" },
@@ -16,14 +79,12 @@ const App = function() {
   });
 
   const getItems = function() {
-    const { items, filter } = state;
-
-    return items.filter(function(item) {
-      if (filter === "Pending") {
+    return props.items.filter(function(item) {
+      if (state.filter === "Pending") {
         return !item.done;
       }
 
-      if (filter === "Done") {
+      if (state.filter === "Done") {
         return item.done;
       }
 
@@ -31,79 +92,50 @@ const App = function() {
     });
   };
 
-  const updateNewItem = function(e) {
-    setState({ ...state, newItem: e.target.value });
-  };
-
-  const addItem = function() {
-    if (!state.newItem) {
-      return;
-    }
-
-    setState({
-      ...state,
-      newItem: "",
-      items: [
-        ...state.items,
-        { text: state.newItem, done: false, id: state.items.length }
-      ]
-    });
-  };
-
   const updateFilter = function(e) {
+    console.log("updateFilter");
     setState({ ...state, filter: e.target.value });
   };
 
-  const itemStatusToggler = function(id) {
-    return function() {
-      setState({
-        ...state,
-        items: state.items.map(function(item) {
-          if (item.id !== id) {
-            return item;
-          }
+  return (
+    <>
+      <Filter
+        filters={state.filters}
+        checked={state.filter}
+        onChange={updateFilter}
+      />
+      <ItemList items={getItems()} onClick={props.toggleItemStatus} />
+    </>
+  );
+};
 
-          return { ...item, done: !item.done };
-        })
-      });
-    };
+const App = function() {
+  console.log("App render");
+  const [items, setItems] = useState([]);
+
+  const addItem = function(item) {
+    console.log("addItem");
+    setItems([...items, { text: item, done: false, id: items.length }]);
+  };
+
+  const toggleItemStatus = function(id) {
+    console.log("toggleItemStatus");
+    setItems(
+      items.map(function(item) {
+        if (item.id !== id) {
+          return item;
+        }
+
+        return { ...item, done: !item.done };
+      })
+    );
   };
 
   return (
     <div className="App">
       <div className="container">
-        <div className="new-item">
-          <input
-            className="add-input"
-            onChange={updateNewItem}
-            onKeyDown={onEnter(addItem)}
-            value={state.newItem}
-            placeholder="What to do?"
-            autoFocus
-          />
-          <button className="add" onClick={addItem}>
-            +
-          </button>
-        </div>
-        <div className="filter">
-          <RadioGroup
-            name="filter"
-            radios={state.filters}
-            onChange={updateFilter}
-            checked={state.filter}
-          />
-        </div>
-        <div className="list">
-          {getItems().map(item => (
-            <div
-              onClick={itemStatusToggler(item.id)}
-              className={classList({ done: item.done }, "item")}
-              key={item.id}
-            >
-              {item.text}
-            </div>
-          ))}
-        </div>
+        <NewItem onItem={addItem} />
+        <FilteredList items={items} toggleItemStatus={toggleItemStatus} />
       </div>
     </div>
   );
