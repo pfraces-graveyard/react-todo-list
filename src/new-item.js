@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { onEnter } from "./lib/utils";
 
-export const NewItem = function(props) {
+export const NewItem = memo(function(props) {
   console.log("NewItem render");
   const [item, setItem] = useState("");
 
@@ -30,4 +30,4 @@ export const NewItem = function(props) {
       </button>
     </div>
   );
-};
+});

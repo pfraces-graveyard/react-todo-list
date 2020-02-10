@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import "./App.css";
 import { NewItem } from "./new-item";
 import { FilteredList } from "./filtered-list/filtered-list.final-hooks";
@@ -7,10 +7,10 @@ const App = function() {
   console.log("App render");
   const [items, setItems] = useState([]);
 
-  const addItem = function(item) {
+  const addItem = useCallback((item) => {
     console.log("addItem");
-    setItems([...items, { text: item, done: false, id: items.length }]);
-  };
+    setItems(items => [...items, { text: item, done: false, id: items.length }]);
+  }, []);
 
   const toggleItemStatus = function(id) {
     console.log("toggleItemStatus");
