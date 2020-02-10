@@ -7,9 +7,12 @@ const App = function() {
   console.log("App render");
   const [items, setItems] = useState([]);
 
-  const addItem = useCallback((item) => {
+  const addItem = useCallback(item => {
     console.log("addItem");
-    setItems(items => [...items, { text: item, done: false, id: items.length }]);
+    setItems(items => [
+      ...items,
+      { text: item, done: false, id: items.length }
+    ]);
   }, []);
 
   const toggleItemStatus = function(id) {
